@@ -53,53 +53,36 @@ class DallE3Plugin(Star):
             logger.error(f"生成图片错误: {e}")
             yield event.plain_result(f"生成图片出错: {str(e)}")
 
-    @filter.event_message_type(filter.EventMessageType.ALL)
-    async def auto_draw(self, event: AstrMessageEvent):
-        '''自动检测画图意图并生成'''
-        if not self.api_key or not self.api_endpoint:
-            return
-            
-        message = event.message_str
+    @filter.llm_tool("dalle3_draw")
+    async def dalle3_draw(self, event: AstrMessageEvent, prompt: str, size: str = None):
+        '''使用 DALL-E 3 生成图片。当用户想要生成、绘制、画图时使用此工具。
         
-        # 如果消息以 /draw 或 draw 开头，说明是命令调用，跳过自动检测
-        if message.startswith("/draw") or message.startswith("draw"):
+        Args:
+            prompt(string): 图片描述提示词,需要尽可能详细地描述用户想要的图片内容
+            size(string): 图片尺寸,支持 方形/横版/竖版,默认为方形
+        '''
+        if not self.api_key or not self.api_endpoint:
+            yield event.plain_result("请先在管理面板配置 Azure API Key 和 API 终端点")
             return
-            
-        # 检测是否包含画图意图的关键词
-        keywords = ["画", "生成图片", "画图", "绘制", "生成一张", "帮我画", "绘画", "画个", "画张", "画一个", "画一张", "生图", "画画", "painting"]
-        if any(keyword in message for keyword in keywords):
-            # 移除命令词,提取描述内容
-            for keyword in keywords:
-                message = message.replace(keyword, "")
-            
-            # 尝试提取尺寸
-            size = None
-            # 先检查友好的尺寸名称
-            for size_name in self.size_mapping:
-                if size_name in message:
-                    size = self.size_mapping[size_name]
-                    message = message.replace(size_name, "")
-                    break
-            # 如果没找到友好名称,再检查具体尺寸
-            if not size:
-                for supported_size in self.supported_sizes:
-                    if supported_size in message:
-                        size = supported_size
-                        message = message.replace(supported_size, "")
-                        break
-            
-            message = message.strip()
-            if message:
-                yield event.plain_result("检测到画图请求,正在调用 DALL-E 3 生成...")
-                try:
-                    image_url = await self._generate_image(message, size)
-                    if image_url:
-                        yield event.image_result(image_url)
-                    else:
-                        yield event.plain_result("图片生成失败")
-                except Exception as e:
-                    logger.error(f"生成图片错误: {e}")
-                    yield event.plain_result(f"生成图片出错: {str(e)}")
+
+        # 验证并转换尺寸
+        if size:
+            size = self.size_mapping.get(size, size)
+            if size not in self.supported_sizes:
+                yield event.plain_result(f"不支持的尺寸: {size}，自动切换为默认尺寸\n支持的尺寸: 方形/横版/竖版 或 {', '.join(self.supported_sizes)}")
+                return
+
+        yield event.plain_result("检测到画图请求,正在调用 DALL-E 3 生成...")
+        
+        try:
+            image_url = await self._generate_image(prompt, size)
+            if image_url:
+                yield event.image_result(image_url)
+            else:
+                yield event.plain_result("图片生成失败")
+        except Exception as e:
+            logger.error(f"生成图片错误: {e}")
+            yield event.plain_result(f"生成图片出错: {str(e)}")
 
     async def _generate_image(self, prompt: str, size: str = None) -> str:
         '''调用 DALL-E 3 API 生成图片'''
