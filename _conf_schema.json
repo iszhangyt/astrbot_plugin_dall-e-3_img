@@ -1,0 +1,8 @@
+{
+    "api_key": {
+        "description": "Azure OpenAI API Key",
+        "type": "string", 
+        "hint": "请在 Azure Portal 中获取 API Key",
+        "obvious_hint": true
+    }
+} 
