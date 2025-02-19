@@ -59,7 +59,7 @@ class DallE3Plugin(Star):
         
         Args:
             prompt(string): 图片描述提示词,需要尽可能详细地描述用户想要的图片内容
-            size(string): 图片尺寸,支持 方形/横版/竖版,默认为方形
+            size(string): 图片尺寸,根据用户描述自动判断,支持 方形/横版/竖版,如果用户没有特别指定尺寸，则使用"方形"，不需要询问用户
         '''
         if not self.api_key or not self.api_endpoint:
             yield event.plain_result("请先在管理面板配置 Azure API Key 和 API 终端点")
