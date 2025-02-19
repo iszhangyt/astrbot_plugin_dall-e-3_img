@@ -38,10 +38,10 @@ class DallE3Plugin(Star):
         if size:
             size = self.size_mapping.get(size, size)
             if size not in self.supported_sizes:
-                yield event.plain_result(f"不支持的尺寸: {size}，切换为默认尺寸\n支持的尺寸: 方形/横版/竖版 或 {', '.join(self.supported_sizes)}")
+                yield event.plain_result(f"不支持的尺寸: {size}，自动切换为默认尺寸\n支持的尺寸: 方形/横版/竖版 或 {', '.join(self.supported_sizes)}")
                 return
 
-        yield event.plain_result("正在生成图片,请稍候...")
+        yield event.plain_result("检测到画图请求,正在调用 DALL-E 3 生成...")
         
         try:
             image_url = await self._generate_image(prompt, size)
@@ -60,6 +60,11 @@ class DallE3Plugin(Star):
             return
             
         message = event.message_str
+        
+        # 如果消息以 /draw 或 draw 开头，说明是命令调用，跳过自动检测
+        if message.startswith("/draw") or message.startswith("draw"):
+            return
+            
         # 检测是否包含画图意图的关键词
         keywords = ["画", "生成图片", "画图", "绘制", "生成一张", "帮我画", "绘画", "画个", "画张", "画一个", "画一张", "生图", "画画", "painting"]
         if any(keyword in message for keyword in keywords):
