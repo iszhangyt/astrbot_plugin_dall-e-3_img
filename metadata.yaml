@@ -1,6 +1,22 @@
-name: helloworld # 这是你的插件的唯一识别名。
-desc: 这是 AstrBot 的默认插件，支持关键词回复。 # 插件简短描述
-help: 输入 /keyword 查看关键词回复帮助。 # 插件的帮助信息
-version: v1.3 # 插件版本号。格式：v1.1.1 或者 v1.1
-author: Soulter # 作者
-repo: https://github.com/Soulter/helloworld # 插件的仓库地址
+name: dalle3 # 插件的唯一识别名,与 register 中的名称保持一致
+desc: 基于 Azure DALL-E 3 的 AI 图片生成插件 # 插件简短描述
+help: |
+  使用方法:
+  1. 命令方式: /draw <图片描述> [尺寸]
+  2. 自然语言: 包含"画"、"生成图片"等关键词
+  
+  支持的尺寸:
+  - 1024x1024 (默认)
+  - 1792x1024 (横版)
+  - 1024x1792 (竖版)
+  
+  示例:
+  - /draw 一只可爱的橘猫
+  - /draw 一只可爱的橘猫 1792x1024
+  - 帮我画一只可爱的橘猫
+  - 生成一张1792x1024的风景图
+  
+  注意: 使用前需要在管理面板配置 Azure API Key 和 API 终端点
+version: v1.0.0 # 插件版本号
+author: moko # 作者
+repo: https://github.com/iszhangyt/astrbot_plugin_dall-e-3_img # 插件仓库地址

@@ -4,5 +4,11 @@
         "type": "string", 
         "hint": "请在 Azure Portal 中获取 API Key",
         "obvious_hint": true
+    },
+    "api_endpoint": {
+        "description": "Azure DALL-E 3 API 终端点",
+        "type": "string",
+        "hint": "格式如: https://{your-resource-name}.openai.azure.com/openai/deployments/{deployment-id}/images/generations?api-version=2024-02-15-preview",
+        "obvious_hint": true
     }
 } 
